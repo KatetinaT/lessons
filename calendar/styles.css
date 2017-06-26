@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css?family=Lato:400,700');
+
+body {
+  background: #f0f0f0;
+  font-family: 'Lato', sans-serif;
+  color: #303030;
+  font-size: 14px;
+}
+
+.calendar {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 350px;
+}
+.calendar h3 {
+  text-align: center;
+}
+.calendar li {
+  border-radius: 50%;
+  box-sizing: border-box;
+  float: left;
+  height: 50px;
+  line-height: 50px;
+  padding-left: 0;
+  text-align: center;
+  width: 50px;
+  transition: all .5s ease;
+}
+.calendar li.week {
+  color: #000;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.calendar li.day {
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.calendar li.day:hover {
+  background: #fff;
+  border-color: #0075b4;
+}
+.calendar li.current-day {
+  background: #0075b4;
+  border: 1px solid #0075b4;
+  color: #fff;
+}
+.calendar li.current-day:hover {
+  color: #0075b4;
+}
