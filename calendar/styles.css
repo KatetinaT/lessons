@@ -7,11 +7,72 @@ body {
   font-size: 14px;
 }
 
+.calendar-wrapper  {
+  margin: 0;
+  overflow: hidden;
+  width: 350px;
+}
+
+.month-wrapper {
+  overflow: hidden;
+}
+.month-wrapper::after {
+  clear: both;
+  content: "";
+  display: block;
+}
+.arr-left, .arr-right {
+  background: #fff;
+  border-radius: 50%;
+  color: #0075b4;
+  cursor: pointer;
+  height: 40px;
+  float: left;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 40px;
+  text-align: center;
+  transition: all .3s ease;
+  width: 40px;
+}
+.arr-right {
+  float: right;
+}
+.arr-left:hover, .arr-right:hover {
+  background: #0075b4;
+  color: #fff;
+}
+
+.month {
+  float: left;
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 40px;
+  text-align: center;
+  width: calc(100% - 80px);
+}
+
+.week {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+.week li {
+  color: #000;
+  float: left;
+  font-weight: bold;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  text-transform: uppercase;
+  width: 50px;
+}
+.week li.dayoff {
+  color: #ba1000;
+}
+
 .calendar {
   list-style: none;
-  margin: 0;
-  padding: 0;
-  width: 350px;
 }
 .calendar h3 {
   text-align: center;
@@ -26,11 +87,6 @@ body {
   text-align: center;
   width: 50px;
   transition: all .5s ease;
-}
-.calendar li.week {
-  color: #000;
-  font-weight: bold;
-  text-transform: uppercase;
 }
 .calendar li.day {
   border: 1px solid transparent;
