@@ -17,62 +17,60 @@ var weekDays = [
   "Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"
 ];
 
-var newCalendar = function(elem) {
-  var numMonth = makeMonthFucn(elem); //create current month  //return number of month in months arrow
-  //console.log(numMonth + " numMonth");
+var newCalendar = function(id) {
+  var idElem = document.getElementById(id); //get element by id
+  var currentDate =  new Date(); //get current date
+  var currentMonth = currentDate.getMonth(); //get current month
+  var currentYear = currentDate.getFullYear(); //get current year
 
-  makeWeekDaysFunc(elem); //create days of week
+  makeMonthTitle(idElem, currentMonth); //add title of current month
 
-  makeMonthDays(numMonth); //create days of month
-  var daysArr = makeMonthDays(numMonth);
+  createDaysOfWeek(idElem); //create days of week
+
+  var daysArr = createDaysOfMonth(currentDate, currentMonth, currentYear); //create days of month
+  // var daysArr = createDaysOfMonth(currentDate, currentMonth, currentYear);
 
   //add list of dates to calenadar
-  makeCalendar(elem, daysArr);
+  makeCalendar(idElem, daysArr);
 
   //check today
-  checkToday(numMonth);
+  checkToday(currentMonth);
 
   //change months
-  changeMonthPrev(elem, numMonth);
-}
+  changeMonthPrev(idElem, currentMonth);
+};
 
-//Create Month Function
-var makeMonthFucn = function(id) {
-  var idElem = document.getElementById(id);
+//add name of month to calendar
+var makeMonthTitle = function(idElem, currentMonth) {
   var monthTag = idElem.querySelector(".month");
-  var cunnentDate = new Date();
-  var currentMonth = cunnentDate.getMonth();
-  // currentMonth = --currentMonth; //click back
-  // currentMonth = ++currentMonth; //click front
   monthTag.innerHTML = months[currentMonth];
-  return currentMonth;
-}
+};
 
-//Days of Week Function
-var makeWeekDaysFunc = function(id) {
-  var idElem = document.getElementById(id);
+//Create Days of Week
+var createDaysOfWeek = function(idElem) {
   var ulWeek = document.createElement('ul');
   idElem.appendChild(ulWeek);
   ulWeek.classList.add('week');
   var makeWeekDays;
+
     for (var i=0; i<weekDays.length; i++) {
       makeWeekDays = document.createElement('li');
       makeWeekDays.innerHTML = weekDays[i];
       ulWeek.appendChild(makeWeekDays);
+
       if(i==5 || i==6) {
         makeWeekDays.classList.add('dayoff')
-      }
-    }
-}
+      };
+
+    };
+
+};
 
 //Combine array with prev, current and next dates
-var makeMonthDays = function(month) {
-  var newDate = new Date();
-  var newYear = newDate.getFullYear();
-  var newMonth = month;
-  var daysInMonth = new Date(newYear, newMonth+1, 0);
+var createDaysOfMonth = function(currentDate, currentMonth, currentYear) {
+  var daysInMonth = new Date(currentYear, currentMonth+1, 0);
   var lastDateInMonth = daysInMonth.getDate();
-  var firstDayInWeek = new Date(newYear, newMonth, 1).getDay();
+  var firstDayInWeek = new Date(currentYear, currentMonth, 1).getDay();
   // console.log(firstDayInWeek + " firstDayInWeek")
 
   var daysArr = [];
@@ -86,7 +84,7 @@ var makeMonthDays = function(month) {
 
   //prev
   var prevMonthDate = function(num) {
-    num = new Date(newYear, newMonth, 1-num).getDate();
+    num = new Date(currentYear, currentMonth, 1-num).getDate();
     daysArr.unshift({date: num, month:"prev"});
   };
 
@@ -106,7 +104,7 @@ var makeMonthDays = function(month) {
 
     if(checkNextMonth!=0) {
       for (var i=1; i<=(7-checkNextMonth); i++) {
-        var nextMonthDate = new Date(newYear, newMonth+1, i).getDate();
+        var nextMonthDate = new Date(currentYear, currentMonth+1, i).getDate();
         daysArr.push({date: nextMonthDate, month: "next"});
       }
     }
@@ -116,11 +114,10 @@ var makeMonthDays = function(month) {
 }
 
 //add numbers to the calendar from array
-var makeCalendar = function(elem, arr) {
-    var calendarId  = document.getElementById(elem);
+var makeCalendar = function(idElem, arr) {
     var calendarUl = document.createElement("ul");
     calendarUl.classList.add("calendar");
-    calendarId.appendChild(calendarUl);
+    idElem.appendChild(calendarUl);
 
     var newLi;
     for (var i=0; i<arr.length; i++) {
@@ -132,28 +129,28 @@ var makeCalendar = function(elem, arr) {
 }
 
 //check and mark today's date
-var checkToday = function(month) {
+var checkToday = function(currentMonth) {
   var checkDate = new Date();
   var checkMonth = checkDate.getMonth();
-  if(checkMonth == month) {
+  
+  if(checkMonth == currentMonth) {
     var getToday = checkDate.getDate();
-    var findToday = document.querySelectorAll(".current")[getToday];
+    var findToday = document.querySelectorAll(".current")[getToday-1];
     findToday.classList.add("today");
   }
 
 };
 
 //change month prev
-var changeMonthPrev = function(elem, numMonth) {
-  var calendarId  = document.getElementById(elem);
-  var calendarPrev = calendarId.querySelector(".arr-prev");
-  calendarPrev.onclick = function() {
-    console.log("after: " + numMonth);
-    calendarId.removeChild(calendarId.querySelector(".calendar"));
-    return numMonth--;
+var changeMonthPrev = function(idElem, currentMonth) {
+  var calendarPrev = idElem.querySelector(".arr-prev");
 
+  calendarPrev.onclick = function() {
+    console.log("after: " + currentMonth);
+    idElem.removeChild(idElem.querySelector(".calendar"));
+    return numMonth--;
   }
 
-}
+};
 
 newCalendar("calendar");
