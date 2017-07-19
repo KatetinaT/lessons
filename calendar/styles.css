@@ -23,7 +23,7 @@ body {
 }
 .arr-prev, .arr-next {
   background: #fff;
-  border-radius: 50%;
+  border-radius: 10%;
   color: #0075b4;
   cursor: pointer;
   height: 40px;
@@ -99,11 +99,8 @@ body {
 .calendar li.prev, .calendar li.next {
   color: #9a9a9a;
 }
-.calendar li.today {
+.calendar li.today, .calendar li.today:hover {
   background: #0075b4;
   border: 1px solid #0075b4;
   color: #fff;
-}
-.calendar li.today:hover {
-  color: #0075b4;
 }
