@@ -18,23 +18,24 @@ var weekDays = [
 ];
 
 var newCalendar = function(id) {
+  var newDate = new Date();
   var idElem = document.getElementById(id); //get element by id
   var currentDate =  new Date(); //get current date
   var currentMonth = currentDate.getMonth(); //get current month
   var currentYear = currentDate.getFullYear(); //get current year
+  var calendarUl;
 
   var btnPrev = idElem.querySelector(".arr-prev");
   var btnNext = idElem.querySelector(".arr-next");
 
-  var newMonth = currentMonth;
-  // var daysArr = [];
-
+  makeYearTitle(idElem, currentYear); //add title of current month
   makeMonthTitle(idElem, currentMonth); //add title of current month
 
   createDaysOfWeek(idElem); //create days of week
   createUlCalendar(idElem);
 
   var daysArr = createDaysOfMonth(currentDate, currentMonth, currentYear); //create days of month
+  addWeekends(daysArr); //add options to daysArr
 
   //add list of dates to calenadar
   makeCalendar(idElem, daysArr);
@@ -42,20 +43,90 @@ var newCalendar = function(id) {
   //check today
   checkToday(currentMonth);
 
-  changeMonthPrev(idElem, btnPrev, newMonth);//load prev month by click
-  changeMonthNext(idElem, btnNext, newMonth);//load next month by click
+  var newMonth = currentMonth;
+  var newYear = currentYear;
+
+  btnPrev.onclick = function() {
+    if (newMonth > 0) {
+      newMonth -= 1;
+    } else {
+      newMonth = 11;
+      newYear -= 1;
+      makeYearTitle(idElem, newYear);
+    }
+    makeMonthTitle(idElem, newMonth); //add title of current month
+  	newDate = defineNewDate(newMonth, newYear);
+    daysArr = createDaysOfMonth(newDate, newMonth, newYear); //create days of month
+    addWeekends(daysArr); //add options to daysArr
+    makeCalendar(idElem, daysArr); //add list of dates to calenadar
+    checkToday(newMonth);
+    console.log("prev returns the new date: " + newDate);
+  	return newDate;
+  }
+
+  btnNext.onclick = function() {
+    if (newMonth < 11) {
+      newMonth += 1;
+    } else {
+      newMonth = 0;
+      newYear += 1;
+      makeYearTitle(idElem, newYear);
+    }
+    makeMonthTitle(idElem, newMonth); //add title of current month
+  	newDate = defineNewDate(newMonth, newYear);
+    daysArr = createDaysOfMonth(newDate, newMonth, newYear); //create days of month
+    addWeekends(daysArr); //add options to daysArr
+    makeCalendar(idElem, daysArr); //add list of dates to calenadar
+    checkToday(newMonth);
+    console.log("next returns the new date: " + newDate);
+  	return newDate;
+  }
+
+};
+
+var updateDate = function(month, year, date){
+	month -= 1;
+	year -= 1;
+	date = defineNewDate(month, year);
+	return date;
+};
+
+var defineNewDate = function(month, year) {
+	var date = new Date(year, month, 1);
+	return date;
+}
+
+//add 19-07
+var addWeekends = function(arr) {
+
+	if(arr.length > 0) {
+		for(var i = 5; i < arr.length; i += 7) {
+			arr[i].attr = "sa";
+		}
+
+		for(var i = 6; i < arr.length; i += 7) {
+			arr[i].attr = "su";
+		}
+
+	}
+}; //add 19-07
+
+//add name of month to calendar
+var makeYearTitle = function(id, year) {
+  var yearTag = id.querySelector(".year");
+  yearTag.innerHTML = year;
 };
 
 //add name of month to calendar
-var makeMonthTitle = function(idElem, currentMonth) {
-  var monthTag = idElem.querySelector(".month");
-  monthTag.innerHTML = months[currentMonth];
+var makeMonthTitle = function(id, month) {
+  var monthTag = id.querySelector(".month");
+  monthTag.innerHTML = months[month];
 };
 
 //Create Days of Week
-var createDaysOfWeek = function(idElem) {
+var createDaysOfWeek = function(id) {
   var ulWeek = document.createElement('ul');
-  idElem.appendChild(ulWeek);
+  id.appendChild(ulWeek);
   ulWeek.classList.add('week');
   var makeWeekDays;
 
@@ -73,23 +144,24 @@ var createDaysOfWeek = function(idElem) {
 };
 
 //add ul calendar
-var createUlCalendar = function(idElem) {
+var createUlCalendar = function(id) {
     var calendarUl = document.createElement("ul");
     calendarUl.classList.add("calendar");
-    idElem.appendChild(calendarUl);
+    id.appendChild(calendarUl);
 }
 
 //Combine array with prev, current and next dates
-var createDaysOfMonth = function(currentDate, currentMonth, currentYear) {
-  var daysInMonth = new Date(currentYear, currentMonth+1, 0);
+var createDaysOfMonth = function(currentDate, month, year) {
+  var daysInMonth = new Date(year, month+1, 0);
   var lastDateInMonth = daysInMonth.getDate();
-  var firstDayInWeek = new Date(currentYear, currentMonth, 1).getDay();
-  // console.log(firstDayInWeek + " firstDayInWeek")
+  var firstDayInWeek = new Date(year, month, 1).getDay();
 
   var daysArr = [];
+  var fulldate;
   //current
   var getNewDate = function(num) {
-    daysArr.push({date: num, month:"current", data:""+num + currentMonth + currentYear});
+	fulldate = new Date(year, month, num);
+    daysArr.push({date: num, month:"current", data: new Intl.DateTimeFormat('en-GB').format(fulldate) });
   };
   for (var i = 1; i <= lastDateInMonth; i++) {
     getNewDate(i);
@@ -97,8 +169,9 @@ var createDaysOfMonth = function(currentDate, currentMonth, currentYear) {
 
   //prev
   var prevMonthDate = function(num) {
-    num = new Date(currentYear, currentMonth, 1-num).getDate();
-    daysArr.unshift({date: num, month:"prev"});
+    num = new Date(year, month, 1-num).getDate();
+	fulldate = new Date(year, month-1, num);
+    daysArr.unshift({date: num, month:"prev", data: new Intl.DateTimeFormat('en-GB').format(fulldate)});
   };
 
   if (firstDayInWeek > 1) {
@@ -117,8 +190,9 @@ var createDaysOfMonth = function(currentDate, currentMonth, currentYear) {
 
     if(checkNextMonth!=0) {
       for (var i=1; i<=(7-checkNextMonth); i++) {
-        var nextMonthDate = new Date(currentYear, currentMonth+1, i).getDate();
-        daysArr.push({date: nextMonthDate, month: "next"});
+        var nextMonthDate = new Date(year, month+1, i).getDate();
+		fulldate = new Date(year, month+1, i);
+        daysArr.push({date: nextMonthDate, month: "next", data: new Intl.DateTimeFormat('en-GB').format(fulldate)});
       }
     }
 
@@ -127,95 +201,33 @@ var createDaysOfMonth = function(currentDate, currentMonth, currentYear) {
 }
 
 //add numbers to the calendar from array
-var makeCalendar = function(idElem, arr) {
-    var calendarUl = document.querySelector('.calendar');
+var makeCalendar = function(id, arr) {
+    calendarUl = document.querySelector('.calendar');
+    calendarUl.innerHTML = "";
     var newLi;
 
     for (var i=0; i<arr.length; i++) {
       newLi = document.createElement('li');
       newLi.innerHTML = arr[i].date;
       newLi.classList.add(arr[i].month);
+	  if(arr[i].attr) {
+		newLi.classList.add(arr[i].attr);
+	  }
       newLi.setAttribute("data-date", arr[i].data);
       calendarUl.appendChild(newLi);
     }
 }
 
+
 //check and mark today's date
-var checkToday = function(currentMonth) {
+var checkToday = function(month) {
   var checkDate = new Date();
   var checkMonth = checkDate.getMonth();
 
-  if(checkMonth == currentMonth) {
+  if(checkMonth == month) {
     var getToday = checkDate.getDate();
     var findToday = document.querySelectorAll(".current")[getToday-1];
     findToday.classList.add("today");
-  }
-
-};
-
-//load prev month by click
-var changeMonthPrev = function(idElem, btnPrev, newMonth) {
-
-  var calendar = document.querySelector(".calendar");
-  var month = document.querySelector(".month");
-
-  //combine btnPrev & btnNext into one function
-  //step 1 - define month
-  //step 2 - define year
-  //step 3 - define the button was clicked -> if close 
-
-  btnPrev.onclick = function() {
-    calendar.innerHTML = '';
-    month.innerHTML = '';
-    var newDate = new Date();
-    var newYear = newDate.getFullYear();
-    var newDaysArr = []
-
-    if (newMonth >= 1) {
-      newMonth -= 1;
-      console.log(newMonth);
-      makeMonthTitle(idElem, newMonth);
-      newDaysArr = createDaysOfMonth(newDate, newMonth, newYear);
-      makeCalendar(idElem, newDaysArr);
-    } else {
-      newMonth = 11;
-      newYear -= 1;
-      console.log(newMonth + " new year" + newYear);
-      makeMonthTitle(idElem, newMonth);
-      newDaysArr = createDaysOfMonth(newDate, newMonth, newYear);
-      makeCalendar(idElem, newDaysArr);
-    }
-  }
-
-};
-
-//load next month by click
-var changeMonthNext = function(idElem, btnNext, newMonth) {
-
-  var calendar = document.querySelector(".calendar");
-  var month = document.querySelector(".month");
-
-  btnNext.onclick = function() {
-    calendar.innerHTML = '';
-    month.innerHTML = '';
-    var newDate = new Date();
-    var newYear = newDate.getFullYear();
-    var newDaysArr = []
-
-    if (newMonth <= 11) {
-      newMonth += 1;
-      console.log(newMonth);
-      makeMonthTitle(idElem, newMonth);
-      newDaysArr = createDaysOfMonth(newDate, newMonth, newYear);
-      makeCalendar(idElem, newDaysArr);
-    } else {
-      newMonth = 0;
-      newYear += 1;
-      console.log(newMonth + " new year" + newYear);
-      makeMonthTitle(idElem, newMonth);
-      newDaysArr = createDaysOfMonth(newDate, newMonth, newYear);
-      makeCalendar(idElem, newDaysArr);
-    }
   }
 
 };
