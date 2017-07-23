@@ -104,3 +104,13 @@ body {
   border: 1px solid #0075b4;
   color: #fff;
 }
+.calendar li.sa, .calendar li.su {
+	color: #ba1000;
+}
+.calendar li.today.sa, .calendar li.today.su,
+.calendar li.today.sa:hover, .calendar li.today.su:hover
+{
+	background: #fff;
+  border-color: #ba1000;
+  color: #ba1000;
+}
