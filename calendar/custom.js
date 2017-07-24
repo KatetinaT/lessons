@@ -23,7 +23,6 @@ var newCalendar = function(id) {
   var currentDate =  new Date(); //get current date
   var currentMonth = currentDate.getMonth(); //get current month
   var currentYear = currentDate.getFullYear(); //get current year
-  var calendarUl;
 
   var btnPrev = idElem.querySelector(".arr-prev");
   var btnNext = idElem.querySelector(".arr-next");
@@ -32,7 +31,7 @@ var newCalendar = function(id) {
   makeMonthTitle(idElem, currentMonth); //add title of current month
 
   createDaysOfWeek(idElem); //create days of week
-  createUlCalendar(idElem);
+  var calendarUl = createUlCalendar(idElem);
 
   var daysArr = createDaysOfMonth(currentDate, currentMonth, currentYear); //create days of month
   addWeekends(daysArr); //add options to daysArr
@@ -45,6 +44,10 @@ var newCalendar = function(id) {
 
   var newMonth = currentMonth;
   var newYear = currentYear;
+
+  //event block
+  var eventWrap = addEventWrap(idElem);
+  addEvent(eventWrap, calendarUl);
 
   btnPrev.onclick = function() {
     if (newMonth > 0) {
@@ -145,9 +148,10 @@ var createDaysOfWeek = function(id) {
 
 //add ul calendar
 var createUlCalendar = function(id) {
-    var calendarUl = document.createElement("ul");
-    calendarUl.classList.add("calendar");
-    id.appendChild(calendarUl);
+    var ul = document.createElement("ul");
+    ul.classList.add("calendar");
+    id.appendChild(ul);
+    return ul;
 }
 
 //Combine array with prev, current and next dates
@@ -218,6 +222,13 @@ var makeCalendar = function(id, arr) {
     }
 }
 
+//add event block
+var addEventWrap = function(id) {
+  var eventWrap = document.createElement("div");
+  eventWrap.classList.add("event-wrapper");
+  id.appendChild(eventWrap);
+  return eventWrap;
+}
 
 //check and mark today's date
 var checkToday = function(month) {
@@ -231,5 +242,95 @@ var checkToday = function(month) {
   }
 
 };
+
+//add event by click
+var addEvent = function(id, elem) {
+  elem.onclick = function() {
+    hideEventBlock(id);
+    removeActiveLi(elem);
+
+    var target = event.target;
+    var targetId;
+
+    if(target.tagName == "LI") {
+      target.classList.add('pink');
+      targetId = target.getAttribute("data-date");
+    };
+
+    var eventValue = localStorage[targetId];
+
+    var dateHere = targetId;
+    var eventTitle = addEventTitle(id, dateHere);
+    var delBtn = addBtn(id, "delete", "Delete Event");
+    var eventBlock = addEventBlock(id, eventValue);
+    var cancelBtn = addBtn(id, "cancel", "Cancel");
+    var saveBtn = addBtn(id, "save", "Save");
+
+    saveBtn.onclick = function() {
+      eventValue = eventBlock.value;
+      if(eventValue) {
+        localStorage.setItem(targetId, eventValue);
+        hideEventBlock(id);
+        target.classList.remove('pink');
+      } else {
+        alert("Nothing to Save!");
+      }
+    }
+
+    cancelBtn.onclick = function() {
+      target.classList.remove('pink');
+      hideEventBlock(id);
+    }
+
+    delBtn.onclick = function() {
+      if(eventValue || eventBlock.value) {
+        if(confirm("Are You shure?")) {
+          target.classList.remove('pink');
+          hideEventBlock(id);
+          delete localStorage[targetId];
+        } else {
+          console.log("nothing")
+        }
+      }
+
+    }
+
+  }
+};
+
+var addEventTitle = function(id, value) {
+  var newTitle = document.createElement("h4");
+  newTitle.innerHTML = "Event for date " + value;
+  id.appendChild(newTitle);
+}
+
+var addEventBlock = function(id, eventValue) {
+  var newEvent = document.createElement("textarea");
+  newEvent.classList.add("event-text");
+  newEvent.setAttribute("placeholder", "Start to write here...");
+  if(eventValue) newEvent.innerHTML = eventValue;
+  id.appendChild(newEvent);
+  return newEvent;
+}
+
+var addBtn = function(id, value, name) {
+  var btn = document.createElement("button");
+  btn.setAttribute("name", value);
+  btn.classList.add(value);
+  btn.innerHTML = name;
+  id.appendChild(btn);
+  return btn;
+}
+
+var hideEventBlock = function(id) {
+  id.innerHTML = "";
+}
+
+var removeActiveLi = function(id) {
+  var elem;
+  if(elem = id.querySelector(".pink")) {
+    elem.classList.remove("pink");
+  }
+}
 
 newCalendar("calendar");
