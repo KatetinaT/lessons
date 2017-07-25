@@ -48,6 +48,7 @@ var newCalendar = function(id) {
   //event block
   var eventWrap = addEventWrap(idElem);
   addEvent(eventWrap, calendarUl);
+  checkEvents();
 
   btnPrev.onclick = function() {
     if (newMonth > 0) {
@@ -63,6 +64,7 @@ var newCalendar = function(id) {
     addWeekends(daysArr); //add options to daysArr
     makeCalendar(idElem, daysArr); //add list of dates to calenadar
     checkToday(newMonth);
+    checkEvents();
     console.log("prev returns the new date: " + newDate);
   	return newDate;
   }
@@ -81,6 +83,7 @@ var newCalendar = function(id) {
     addWeekends(daysArr); //add options to daysArr
     makeCalendar(idElem, daysArr); //add list of dates to calenadar
     checkToday(newMonth);
+    checkEvents();
     console.log("next returns the new date: " + newDate);
   	return newDate;
   }
@@ -145,6 +148,7 @@ var createDaysOfWeek = function(id) {
     };
 
 };
+
 
 //add ul calendar
 var createUlCalendar = function(id) {
@@ -253,7 +257,7 @@ var addEvent = function(id, elem) {
     var targetId;
 
     if(target.tagName == "LI") {
-      target.classList.add('pink');
+      target.classList.add('active');
       targetId = target.getAttribute("data-date");
     };
 
@@ -271,32 +275,54 @@ var addEvent = function(id, elem) {
       if(eventValue) {
         localStorage.setItem(targetId, eventValue);
         hideEventBlock(id);
-        target.classList.remove('pink');
+        target.classList.remove('active');
+        target.classList.add('event');
       } else {
         alert("Nothing to Save!");
       }
     }
 
     cancelBtn.onclick = function() {
-      target.classList.remove('pink');
+      target.classList.remove('active');
       hideEventBlock(id);
     }
 
     delBtn.onclick = function() {
       if(eventValue || eventBlock.value) {
         if(confirm("Are You shure?")) {
-          target.classList.remove('pink');
+          target.classList.remove('active');
+          target.classList.remove('event');
           hideEventBlock(id);
           delete localStorage[targetId];
-        } else {
-          console.log("nothing")
-        }
-      }
+        };
+      };//if
 
+    };//btn
+
+  };//elem
+};//func
+
+//check events
+var checkEvents = function() {
+  var calendar = document.querySelector('.calendar');
+  var datesList = calendar.getElementsByTagName('li');
+
+  for(var key in localStorage) {
+    console.log(key);
+    var attr;
+
+    for (var i = 0; i < datesList.length; i++) {
+        attr = datesList[i].getAttribute('data-date');
+        console.log("attr " + attr);
+        console.log("key " + key);
+        if(attr == key) {
+          datesList[i].classList.add('event');
+        }
     }
 
   }
-};
+}
+
 
 var addEventTitle = function(id, value) {
   var newTitle = document.createElement("h4");
@@ -328,9 +354,33 @@ var hideEventBlock = function(id) {
 
 var removeActiveLi = function(id) {
   var elem;
-  if(elem = id.querySelector(".pink")) {
-    elem.classList.remove("pink");
+  if(elem = id.querySelector(".active")) {
+    elem.classList.remove("active");
   }
 }
 
 newCalendar("calendar");
+
+//checkEvents();
+
+//more tasks
+/*
+1. Save Title and Description of the Event at the localStorage.
+2. Save several Events at the same date.
+3. Change Status to Done and turn it back.
+4. Show Notification for Today.
+*/
+/*
+var obj = {
+    item1: {title: "title1", desc: "fdk", stat: 0},
+    item2: {title: "title2", desc: "sass", stat: 1},
+    item3: {title: "title3", desc: "two33", stat: 0},
+};
+
+var serialObj = JSON.stringify(obj); //сериализуем его
+
+localStorage.setItem("myKey", serialObj); //запишем его в хранилище по ключу "myKey"
+
+var returnObj = JSON.parse(localStorage.getItem("myKey"));
+console.log(returnObj.item3.desc);
+*/
