@@ -180,6 +180,39 @@ button.delete, button.save {
   float: right;
 }
 
-.event-wrapper h4 {
-  display: inline;
+.event-item {
+  margin-bottom: 10px;
+  padding: 5px 34px 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+  transition: all .5s ease;
+}
+.event-item:hover {
+  background: #fff;
+}
+.event-item:hover:after {
+  background: url(https://image.flaticon.com/icons/png/256/149/149307.png) no-repeat 0 0;
+  content: "";
+  display: block;
+  height: 20px;
+  width: 20px;
+  background-size: cover;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  opacity: 0.5;
+}
+.event-item input[type="checkbox"] {
+  float: left;
+  width: 30px;
+  text-align: center;
+  margin-left: 5px;
+  cursor: pointer;
+}
+.event-item .event-title {
+  margin: 0;
+}
+.event-item .event-info {
+  overflow: hidden;
 }

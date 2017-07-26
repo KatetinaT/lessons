@@ -47,8 +47,9 @@ var newCalendar = function(id) {
 
   //event block
   var eventWrap = addEventWrap(idElem);
-  addEvent(eventWrap, calendarUl);
-  checkEvents();
+  //addEvent(eventWrap, calendarUl);
+  checkEvents(calendarUl);
+  loadEvents(eventWrap, calendarUl);
 
   btnPrev.onclick = function() {
     if (newMonth > 0) {
@@ -64,7 +65,7 @@ var newCalendar = function(id) {
     addWeekends(daysArr); //add options to daysArr
     makeCalendar(idElem, daysArr); //add list of dates to calenadar
     checkToday(newMonth);
-    checkEvents();
+    checkEvents(calendarUl);
     console.log("prev returns the new date: " + newDate);
   	return newDate;
   }
@@ -83,7 +84,7 @@ var newCalendar = function(id) {
     addWeekends(daysArr); //add options to daysArr
     makeCalendar(idElem, daysArr); //add list of dates to calenadar
     checkToday(newMonth);
-    checkEvents();
+    checkEvents(calendarUl);
     console.log("next returns the new date: " + newDate);
   	return newDate;
   }
@@ -247,7 +248,81 @@ var checkToday = function(month) {
 
 };
 
+//display list of event for the selected date
+var loadEvents = function(id, elem) {
+  elem.onclick = function() {
+
+    removeActiveLi(elem);
+    var target = event.target;
+    var targetId;
+
+    if(target.tagName == "LI") {
+      target.classList.add('active');
+      targetId = target.getAttribute("data-date");
+      var eventValueArr = localStorage[targetId];
+    };
+
+    var eventTitle = addEventDate(id, targetId);
+
+    if(eventValueArr != undefined) {
+      var eventValue = JSON.parse(localStorage.getItem(targetId));
+
+      for (var i = 0; i < eventValue.length; i++) {
+        addEvenItem(id, eventValue[i].done, eventValue[i].title, eventValue[i].desc);
+        //console.log("Status: " + eventValue[i].done);
+        //console.log("Title: " + eventValue[i].title);
+        //console.log("Desc: " + eventValue[i].desc);
+      };
+
+    };
+
+    addBtn(id, "btn-plus", "+ Add Event");
+
+  };
+};
+
+var addEvenItem = function(wrapper, status, title, desc) {
+  var itemWrap = document.createElement("div");
+  itemWrap.classList.add("event-item");
+  wrapper.appendChild(itemWrap);
+
+  var checkbox = document.createElement("input");
+  checkbox.setAttribute("type", "checkbox");
+  if(status == 1) {
+    checkbox.checked = true;
+  }
+  itemWrap.appendChild(checkbox);
+
+  var eventInfo = document.createElement("div");
+  eventInfo.classList.add("event-info");
+  itemWrap.appendChild(eventInfo);
+
+  var eventTitle = document.createElement("h4");
+  eventTitle.innerHTML = title;
+  eventTitle.classList.add("event-title");
+  eventInfo.appendChild(eventTitle);
+
+  var eventDesc = document.createElement("div");
+  eventDesc.innerHTML = desc;
+  eventDesc.classList.add("event-desc");
+  eventInfo.appendChild(eventDesc);
+};
+
+var eventArr = function(key) {
+  var item1 = {title: "event title", desc: "event desc", done: 1};
+  var item2 = {title: "event title new", desc: "event desc new", done: 0};
+  var item3 = {title: "event title new last", desc: "event desc new", done: 1};
+  var eventObj = [];
+  eventObj.push(item1, item2, item3);
+  var stringEventObj = JSON.stringify(eventObj);
+  localStorage.setItem(key, stringEventObj);
+  var returnEvent = JSON.parse(localStorage.getItem(key));
+  console.log(returnEvent[1].title);
+}
+eventArr("15/07/2017");
+
 //add event by click
+/*
 var addEvent = function(id, elem) {
   elem.onclick = function() {
     hideEventBlock(id);
@@ -301,20 +376,19 @@ var addEvent = function(id, elem) {
 
   };//elem
 };//func
+*/
 
 //check events
-var checkEvents = function() {
-  var calendar = document.querySelector('.calendar');
-  var datesList = calendar.getElementsByTagName('li');
+var checkEvents = function(elem) {
+  var datesList = elem.getElementsByTagName('li');
 
   for(var key in localStorage) {
-    console.log(key);
     var attr;
 
     for (var i = 0; i < datesList.length; i++) {
         attr = datesList[i].getAttribute('data-date');
-        console.log("attr " + attr);
-        console.log("key " + key);
+        //console.log("attr " + attr);
+        //console.log("key " + key);
         if(attr == key) {
           datesList[i].classList.add('event');
         }
@@ -324,9 +398,11 @@ var checkEvents = function() {
 }
 
 
-var addEventTitle = function(id, value) {
-  var newTitle = document.createElement("h4");
-  newTitle.innerHTML = "Event for date " + value;
+var addEventDate = function(id, value) {
+  var eventDate = value.split('/');
+  var eventDateTitle = new Date(eventDate[2], eventDate[1], eventDate[0]);
+  var newTitle = document.createElement("h3");
+  newTitle.innerHTML = eventDateTitle;
   id.appendChild(newTitle);
 }
 
@@ -361,6 +437,8 @@ var removeActiveLi = function(id) {
 
 newCalendar("calendar");
 
+
+
 //checkEvents();
 
 //more tasks
@@ -384,3 +462,5 @@ localStorage.setItem("myKey", serialObj); //запишем его в храни�
 var returnObj = JSON.parse(localStorage.getItem("myKey"));
 console.log(returnObj.item3.desc);
 */
+
+//localStorage.clear();
