@@ -1,4 +1,4 @@
-var reduction = function(a, b) {
+var reduction = (a, b) => {
 
   for (let i = 2; i <= a; i++) {
 
@@ -8,7 +8,7 @@ var reduction = function(a, b) {
   return false;
 };
 
-var displsyVal = function(arr) {
+var displayVal = (arr) => {
 
   let result = [];
 
@@ -17,11 +17,12 @@ var displsyVal = function(arr) {
     result.push(" " + keyArr);
   }
 
-  document.write(result);
+  return result;
 
 };
 
-var getFarey = function(n) {
+var getFarey = (n) => {
+  let nVal = n;
   let arrIndex = [];
 
   for ( ; n > 0; n--) {
@@ -35,10 +36,15 @@ var getFarey = function(n) {
 
   }
 
+  arrIndex.sort( (a, b) => {
+    a[0] / a[1] < b[0] / b[1];
+  });
+
   arrIndex.splice( 0, 0, [0, 1] );
   arrIndex.push( [1, 1] );
 
-  displsyVal(arrIndex);
+  document.write( `<strong>The Farey sequence of order ${nVal}:</strong> ${displayVal(arrIndex)} <br />`  );
+
 };
 
-getFarey(6);
+getFarey(5);
